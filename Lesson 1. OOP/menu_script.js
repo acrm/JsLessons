@@ -42,21 +42,6 @@ Link.prototype.render = function() {
     return aHref;
 }
 
-// ActionLink
-function ActionLink(action, container) {
-    Link.call(this, '#', container);
-    
-    this.action = action;
-}
-ActionLink.prototype = Object.create(Link.prototype);
-ActionLink.prototype.constructor = ActionLink;
-ActionLink.prototype.baseRender = Link.prototype.render
-ActionLink.prototype.render = function() {
-    var aHref = this.baseRender();
-    aHref.onclick = action;
-    return aHref;
-}
-
 // Label
 function Label(text) {
     Container.call(this);
@@ -77,6 +62,21 @@ function TextLink(href, label) {
 }
 TextLink.prototype = Object.create(Link.prototype);
 TextLink.prototype.constructor = TextLink;
+
+// ActionLink
+function ActionLink(action, label) {
+    TextLink.call(this, '#', label);
+    
+    this.action = action;
+}
+ActionLink.prototype = Object.create(TextLink.prototype);
+ActionLink.prototype.constructor = ActionLink;
+ActionLink.prototype.baseRender = TextLink.prototype.render
+ActionLink.prototype.render = function() {
+    var aHref = this.baseRender();
+    aHref.onclick = this.action;
+    return aHref;
+}
 
 
 // Menu
@@ -138,9 +138,9 @@ function ActionLinkMenuItem(label, action) {
     MenuItem.call(this);
     this.link = new ActionLink(action, label)    
 }
-LinkMenuItem.prototype = Object.create(MenuItem.prototype);
-LinkMenuItem.prototype.constructor = LinkMenuItem;
-LinkMenuItem.prototype.renderContent = function() {
+ActionLinkMenuItem.prototype = Object.create(MenuItem.prototype);
+ActionLinkMenuItem.prototype.constructor = ActionLinkMenuItem;
+ActionLinkMenuItem.prototype.renderContent = function() {
     return this.link.render();
 }
 

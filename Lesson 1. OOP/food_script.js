@@ -51,70 +51,76 @@ function Topping(price, calories) {
 Topping.prototype = Object.create(SimpleFood.prototype);
 Topping.prototype.constructor = Topping;
 
+// HamburgerSize
+function HamburgerSize(name) {
+    this.name = name;
+}
+HamburgerSize.BIG_SIZE = new HamburgerSize("Большой");
+HamburgerSize.SMALL_SIZE = new HamburgerSize("Маленький");    
+HamburgerSize.SIZES = [HamburgerSize.BIG_SIZE, HamburgerSize.SMALL_SIZE];        
+HamburgerSize.prototype.getName = function() {
+    return this.name;
+}    
 
 // Hamburger
 function Hamburger(size, price, calories) {
     var base = new SimpleFood(price, calories);
     CompositeFood.call(this, [base]);
     this.isStuffed = false;
-    if(SIZES.includes(size)) {
+    if(HamburgerSize.SIZES.includes(size)) {
         this.size = size;
     }
     else {
-        console.log("Такого размера гамбургеры у нас не делаются.");
+        throw new Exception("Такого размера гамбургеры у нас не делаются.");
     }
 }
 Hamburger.prototype = Object.create(CompositeFood.prototype);
 Hamburger.prototype.constructor = Hamburger;
-Hamburger.prototype.BIG_SIZE = "Большой";
-Hamburger.prototype.SMALL_SIZE = "Маленький";    
-Hamburger.prototype.SIZES = [Hamburger.prototype.BIG_SIZE, Hamburger.prototype.SMALL_SIZE];    
 Hamburger.prototype.chooseStuffing = function(stuffing) {
     if(this.isStuffed) {
-        console.log("Начинка уже выбрана.");
-        return;
+        return "Начинка уже была выбрана.";
     }
 
     if(stuffing instanceof Stuffing) {
         this.parts.push(stuffing);
         this.isStuffed = true;
+        return "Начинка выбрана.";  
     }
     else {
-        console.log("Данный продукт нельзя использовать в качестве начинки.");
+        return "Данный продукт нельзя использовать в качестве начинки.";
     }
 }
 Hamburger.prototype.addTopping = function(topping) {
     if(topping instanceof Topping) {
         if(this.parts.includes(topping)) {
-            console.log("Данный топпинг уже добавлен.");
-            return;        
+            return "Данный топпинг уже был добавлен.";        
         }
         this.parts.push(topping);
+        return "Топпинг добавлен.";  
     }
     else {
-        console.log("Данный продукт нельзя использовать в качестве топпинга.");
+        return "Данный продукт нельзя использовать в качестве топпинга.";
     }
 }
 Hamburger.prototype.removeTopping = function(topping) {
     if(topping instanceof Topping) {
         var index = this.parts.indexOf(topping); 
         if(index == -1) {
-            console.log("Данный топпинг не был добавлен.");
-            return;        
+            return "Данный топпинг не был добавлен.";        
         }
         this.parts.splice(index, 1);
+        return "Топпинг удален.";  
     }
     else {
-        console.log("Данный продукт нельзя использовать в качестве топпинга.");
+        return "Данный продукт нельзя использовать в качестве топпинга.";
     }
 }
 Hamburger.prototype.getName = function() {
-    return this.size + " гамбургер"; 
+    return this.size.getName() + " гамбургер"; 
 }
 Hamburger.prototype.checkOut = function() {
     if(!this.isStuffed) {
-        console.log("Ещё не выбрана начинка!");
-        return;
+        return "Вы ещё не выбрали начинку.";
     }
     
     return "Вы заказали " 
@@ -125,44 +131,3 @@ Hamburger.prototype.checkOut = function() {
         + this.calcCalories() 
         + " калорий";
 } 
-
-
-
-var chees = new Stuffing(10, 20);
-var salad = new Stuffing(20, 5);
-var potatoes = new Stuffing(15, 10);
-
-var spicies = new Topping(15, 0);
-var mayonnaise = new Topping(20, 5);
-
-var yourHamburger = Object.create(smallHamburger);
-yourHamburger.chooseStuffing(salad);
-yourHamburger.addTopping(spicies);
-yourHamburger.addTopping(mayonnaise);
-
-yourHamburger.checkOut();
-
-var cafe = {
-    SMALL_HAMBURGER: new Hamburger(Hamburger.SMALL_SIZE, 50, 20),
-    BIG_HAMBURGER: new Hamburger(Hamburger.BIG_SIZE, 100, 40),
-    yourHamburger: null,
-    chooseBigHamburger: function() {
-        this.createHamburger(this.BIG_HAMBURGER);
-    },
-    chooseSmallHamburger: function() {
-        this.createHamburger(this.SMALL_HAMBURGER);
-    },
-    createHamburger: function(chosenHamburger) {
-        if(this.yourHamburger == null) {
-            this.yourHamburger = Object.create(chosenHamburger);
-        }
-        else {
-            console.log("Вы уже заказали " + this.yourHamburger.getName() + ".");
-        }
-    },
-    checkOut: function() {
-        return this.yourHamburger != null
-            ? this.yourHamburger.checkOut()
-            : "Вы не выбрали гамбургер.";
-    }
-};
