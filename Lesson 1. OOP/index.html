@@ -1,0 +1,42 @@
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="style.css">
+        <script src="menu_script.js"></script> 
+        <script src="food_script.js"></script> 
+        <script>            
+            var premiumMenu;
+            
+            window.onload = function() {
+                // Menu
+                premiumMenu = new NestedMenuItem('Премиальное меню', 'premium-menu', 'menu', [
+                    new LinkMenuItem('/сatalog/premium/elite', 'Элитные товары'),
+                    new LinkMenuItem('/сatalog/premium/vip', 'VIP товары'),
+                ]);
+
+                var menu = new Menu('menu', 'menu', [
+                    new LinkMenuItem('/', 'Главная'),
+                    new NestedMenuItem('Каталог', 'submenu', 'menu', [
+                        new ActionLinkMenuItem('Большой гамбургер', function() { 
+                            cafe.chooseBigHamburger();
+                            console.log(cafe.checkOut());
+                        }),
+                        new LinkMenuItem('/сatalog/onsale', 'Товары по акции'),
+                        premiumMenu
+                    ]),
+                    new LinkMenuItem('/about', 'О нас')
+                ]);
+                
+                document.getElementById('navigation-container').appendChild(menu.render());
+
+                // Food
+            };
+        </script>
+    </head>
+    <body>
+        <div id="navigation-container"></div>
+        <div id="premium-remover">
+            <input type="checkbox" onchange="premiumMenu.remove(); this.disabled = true;">
+            <span>Эти цены меня расстраивают</span>
+        </div>
+    </body>
+</html>
