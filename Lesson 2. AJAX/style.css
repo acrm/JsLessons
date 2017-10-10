@@ -1,0 +1,89 @@
+#navigation-container > ul.menu {
+    background-color: #f90;
+    position: relative;
+    height: 50px;
+}
+
+ul.menu {
+    display: flex;
+    justify-content: flex-start;
+    align-items: stretch;
+    list-style: none;
+    border: 1px solid #000;
+    border-radius: 5px;
+    background-color: #6c6;
+}
+
+.menu li {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    margin: 0px;
+    font-size: 20px;
+    font-family: sans-serif;
+    list-style-type: none;
+}
+
+ul.menu li:hover {
+    background-color: #c36;
+}
+
+ul.menu li:hover > p > ul.menu > li:hover {
+    border-radius: 5px;
+}
+
+ul.menu li a {
+    color: #eee;
+    text-decoration: none;
+}
+
+ul.menu li span {
+    color: #eee;
+}
+
+ul.menu li ul.menu {
+    display: none;   
+    position: absolute; 
+}    
+
+ul.menu li:hover > p > ul.menu {
+    display: flex;
+    flex-direction: column;
+}
+
+#premium-menu {
+    color: gold;
+    background-color: #101;
+}
+
+#premium-menu ul {
+    color: gold;
+    background-color: #101;
+    border: 2px solid gold;
+}
+
+#premium-menu li:hover {
+    background-color: darkslategray;
+}
+
+#premium-menu span {
+    color: gold;
+}
+
+#premium-remover {
+    display: flex;
+    align-items: center;
+}
+
+#premium-remover input[type=checkbox] {
+    width: 30px;
+    height: 30px;
+}
+
+#premium-remover span {
+    padding: 10px;
+    font-family: sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+    color: #966;
+}
