@@ -1,34 +1,149 @@
 <html>
     <head>
         <link rel="stylesheet" type="text/css" href="style.css">
-        <!-- <script src="menu_script.js"></script>  -->
-        <!-- <script src="food_script.js"></script>  -->
+        <script src="menu_script.js"></script> 
+        <script src="food_script.js"></script> 
+        <script src="gallery.js"></script> 
         <script>            
+            var premiumStuffingMenu;
             
             window.onload = function() {
-                var xhr = new XMLHttpRequest();
-                xhr.onreadystatechange = function(){
-                    if(xhr.readyState === XMLHttpRequest.DONE) {
-                        if (xhr.status === 200) {
-                            var gallery = JSON.parse(xhr.responseText);
-                            var dialog = document.getElementById('dialog');
-                            for(var i = 0; i < gallery.length; i++) {
-                                var p = document.createElement('p');
-                                var img = document.createElement('img');
-                                dialog.appendChild(p);
-                                p.innerHTML = gallery[i].small;
-                                img.src = gallery[i].big;
-                                p.appendChild(img);
-                            }
+                // Food
+                
+                var cafe = {
+                    menu: {
+                        SMALL_HAMBURGER: new Hamburger(HamburgerSize.SMALL_SIZE, 50, 20),
+                        BIG_HAMBURGER: new Hamburger(HamburgerSize.BIG_SIZE, 100, 40),
+                            
+                        CHEESE_STUFFING: new Stuffing(10, 20),
+                        SALAD_STUFFING: new Stuffing(20, 5),
+                        POTATO_STUFFING: new Stuffing(15, 10),
+                        TRUFFLE_STUFFING: new Stuffing(200, 20),
+                        LOBSTER_STUFFING: new Stuffing(150, 15),
+                       
+                        SPICIES_TOPPING: new Topping(15, 0),
+                        MAYONNAISE_TOPPING: new Topping(20, 5)
+                    },
+
+                    yourHamburger: null,
+                    
+                    spellAction: function(message) {
+                        var dialog = document.getElementById('dialog');
+                        var p = document.createElement('p');
+                        p.innerHTML = message;
+                        dialog.appendChild(p);
+                    },
+                    
+                    checkHamburger: function() {
+                        if(this.yourHamburger == null) {
+                            this.spellAction("Вы не выбрали гамбургер.");   
+                            return false;
                         }
+                        return true;
+                    },
+                    createHamburger: function(chosenHamburger) {
+                        if(this.yourHamburger == null) {
+                            this.yourHamburger = Object.create(chosenHamburger);
+                            this.spellAction("Вы заказали " + this.yourHamburger.getName() + ".");                            
+                        }
+                        else {
+                            this.spellAction("У вас уже заказан " + this.yourHamburger.getName() + ".");
+                        }
+                    },
+                    chooseStuffing: function(chosenStuffing) {
+                        if(!this.checkHamburger()) return;
+
+                        this.spellAction(this.yourHamburger.chooseStuffing(chosenStuffing));
+                    },
+                    addTopping: function(chosenTopping) {
+                        if(!this.checkHamburger()) return;
+
+                        this.spellAction(this.yourHamburger.addTopping(chosenTopping));
+                    },
+                    removeTopping: function(chosenTopping) {
+                        if(!this.checkHamburger()) return;
+
+                        this.spellAction(this.yourHamburger.removeTopping(chosenTopping));
+                    },
+                    checkOut: function() {
+                        if(!this.checkHamburger()) return;
+                        
+                        this.spellAction(this.yourHamburger.checkOut());
                     }
                 };
-                xhr.open('GET', 'gallery.json', true);
-                xhr.send();
-            }
+
+                // Menu
+
+                var stuffingMenu = new NestedMenuItem('Начинки', 'submenu', 'menu', [
+                    new ActionLinkMenuItem('Сыр', function() { 
+                        cafe.chooseStuffing(cafe.menu.CHEESE_STUFFING);
+                    }),
+                    new ActionLinkMenuItem('Салат', function() { 
+                        cafe.chooseStuffing(cafe.menu.SALAD_STUFFING);
+                    }),
+                    new ActionLinkMenuItem('Картошка', function() { 
+                        cafe.chooseStuffing(cafe.menu.SALAD_STUFFING);
+                    }),
+                    premiumStuffingMenu = new NestedMenuItem('Премиальные начинки', 'premium-menu', 'menu', [
+                        new ActionLinkMenuItem('Трюфеля', function() { 
+                            cafe.chooseStuffing(cafe.menu.TRUFFLE_STUFFING);
+                        }),
+                        new ActionLinkMenuItem('Омары', function() { 
+                            cafe.chooseStuffing(cafe.menu.LOBSTER_STUFFING);
+                        })
+                    ])
+                ]);
+
+                
+                var toppingMenu = new NestedMenuItem('Топпинги', 'submenu', 'menu', [
+                    new ActionLinkMenuItem('Добавить специи', function() { 
+                        cafe.addTopping(cafe.menu.SPICIES_TOPPING);
+                    }),
+                    new ActionLinkMenuItem('Убрать специи', function() { 
+                        cafe.removeTopping(cafe.menu.SPICIES_TOPPING);
+                    }),
+                    new ActionLinkMenuItem('Добавить майонез', function() { 
+                        cafe.addTopping(cafe.menu.MAYONNAISE_TOPPING);
+                    }),
+                    new ActionLinkMenuItem('Убрать майонез', function() { 
+                        cafe.removeTopping(cafe.menu.MAYONNAISE_TOPPING);
+                    })
+                ]);
+
+                var menu = new Menu('menu', 'menu', [
+                    new LinkMenuItem('/', 'Главная'),
+                    new NestedMenuItem('Гамбургеры', 'submenu', 'menu', [
+                        new ActionLinkMenuItem('Большой гамбургер', function() { 
+                            cafe.createHamburger(cafe.menu.BIG_HAMBURGER);
+                        }),
+                        new ActionLinkMenuItem('Маленький гамбургер', function() { 
+                            cafe.createHamburger(cafe.menu.SMALL_HAMBURGER);
+                        }),
+                        stuffingMenu,
+                        toppingMenu
+                    ]),
+                    new ActionLinkMenuItem('Купить', function() { 
+                        console.log(cafe.checkOut());
+                    }),
+                    new LinkMenuItem('/about', 'О нас')
+                ]);
+                
+                document.getElementById('navigation-container').appendChild(menu.render());
+                
+                var gallery = new Gallery('backend/gallery.json');
+                document.getElementById('gallery').appendChild(gallery.render());
+                
+                // Food
+            };
         </script>
     </head>
     <body>
+        <div id="navigation-container"></div>
+        <div id="premium-remover">
+            <input type="checkbox" onchange="premiumStuffingMenu.remove(); this.disabled = true;">
+            <span>Эти цены меня расстраивают</span>
+        </div>
         <div id="dialog"></div>
+        <div id="gallery"></div>
     </body>
 </html>
