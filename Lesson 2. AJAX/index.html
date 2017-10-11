@@ -2,76 +2,15 @@
     <head>
         <link rel="stylesheet" type="text/css" href="style.css">
         <script src="menu_script.js"></script> 
-        <script src="food_script.js"></script> 
+        <script src="BurgerCafe.js"></script> 
         <script src="gallery.js"></script> 
         <script>            
             var premiumStuffingMenu;
             
             window.onload = function() {
                 // Food
+                var cafe = new BurgerCafe("Пр. Пирожкова, д. 64");
                 
-                var cafe = {
-                    menu: {
-                        SMALL_HAMBURGER: new Hamburger(HamburgerSize.SMALL_SIZE, 50, 20),
-                        BIG_HAMBURGER: new Hamburger(HamburgerSize.BIG_SIZE, 100, 40),
-                            
-                        CHEESE_STUFFING: new Stuffing(10, 20),
-                        SALAD_STUFFING: new Stuffing(20, 5),
-                        POTATO_STUFFING: new Stuffing(15, 10),
-                        TRUFFLE_STUFFING: new Stuffing(200, 20),
-                        LOBSTER_STUFFING: new Stuffing(150, 15),
-                       
-                        SPICIES_TOPPING: new Topping(15, 0),
-                        MAYONNAISE_TOPPING: new Topping(20, 5)
-                    },
-
-                    yourHamburger: null,
-                    
-                    spellAction: function(message) {
-                        var dialog = document.getElementById('dialog');
-                        var p = document.createElement('p');
-                        p.innerHTML = message;
-                        dialog.appendChild(p);
-                    },
-                    
-                    checkHamburger: function() {
-                        if(this.yourHamburger == null) {
-                            this.spellAction("Вы не выбрали гамбургер.");   
-                            return false;
-                        }
-                        return true;
-                    },
-                    createHamburger: function(chosenHamburger) {
-                        if(this.yourHamburger == null) {
-                            this.yourHamburger = Object.create(chosenHamburger);
-                            this.spellAction("Вы заказали " + this.yourHamburger.getName() + ".");                            
-                        }
-                        else {
-                            this.spellAction("У вас уже заказан " + this.yourHamburger.getName() + ".");
-                        }
-                    },
-                    chooseStuffing: function(chosenStuffing) {
-                        if(!this.checkHamburger()) return;
-
-                        this.spellAction(this.yourHamburger.chooseStuffing(chosenStuffing));
-                    },
-                    addTopping: function(chosenTopping) {
-                        if(!this.checkHamburger()) return;
-
-                        this.spellAction(this.yourHamburger.addTopping(chosenTopping));
-                    },
-                    removeTopping: function(chosenTopping) {
-                        if(!this.checkHamburger()) return;
-
-                        this.spellAction(this.yourHamburger.removeTopping(chosenTopping));
-                    },
-                    checkOut: function() {
-                        if(!this.checkHamburger()) return;
-                        
-                        this.spellAction(this.yourHamburger.checkOut());
-                    }
-                };
-
                 // Menu
 
                 var stuffingMenu = new NestedMenuItem('Начинки', 'submenu', 'menu', [

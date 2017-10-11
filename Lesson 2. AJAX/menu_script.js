@@ -37,6 +37,7 @@ Link.prototype.renderContent = function() {
 Link.prototype.render = function() {
     var aHref = document.createElement('a');
     aHref.href = this.href;
+    aHref.className = this.className;
     aHref.appendChild(this.renderContent());
     
     return aHref;
