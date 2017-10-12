@@ -1,0 +1,88 @@
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="style.css">
+        <script src="menu_script.js"></script> 
+        <script src="BurgerCafe.js"></script> 
+        <script src="gallery.js"></script> 
+        <script>            
+            var premiumStuffingMenu;
+            
+            window.onload = function() {
+                // Food
+                var cafe = new BurgerCafe("Пр. Пирожкова, д. 64");
+                
+                // Menu
+
+                var stuffingMenu = new NestedMenuItem('Начинки', 'submenu', 'menu', [
+                    new ActionLinkMenuItem('Сыр', function() { 
+                        cafe.chooseStuffing(cafe.menu.CHEESE_STUFFING);
+                    }),
+                    new ActionLinkMenuItem('Салат', function() { 
+                        cafe.chooseStuffing(cafe.menu.SALAD_STUFFING);
+                    }),
+                    new ActionLinkMenuItem('Картошка', function() { 
+                        cafe.chooseStuffing(cafe.menu.SALAD_STUFFING);
+                    }),
+                    premiumStuffingMenu = new NestedMenuItem('Премиальные начинки', 'premium-menu', 'menu', [
+                        new ActionLinkMenuItem('Трюфеля', function() { 
+                            cafe.chooseStuffing(cafe.menu.TRUFFLE_STUFFING);
+                        }),
+                        new ActionLinkMenuItem('Омары', function() { 
+                            cafe.chooseStuffing(cafe.menu.LOBSTER_STUFFING);
+                        })
+                    ])
+                ]);
+
+                
+                var toppingMenu = new NestedMenuItem('Топпинги', 'submenu', 'menu', [
+                    new ActionLinkMenuItem('Добавить специи', function() { 
+                        cafe.addTopping(cafe.menu.SPICIES_TOPPING);
+                    }),
+                    new ActionLinkMenuItem('Убрать специи', function() { 
+                        cafe.removeTopping(cafe.menu.SPICIES_TOPPING);
+                    }),
+                    new ActionLinkMenuItem('Добавить майонез', function() { 
+                        cafe.addTopping(cafe.menu.MAYONNAISE_TOPPING);
+                    }),
+                    new ActionLinkMenuItem('Убрать майонез', function() { 
+                        cafe.removeTopping(cafe.menu.MAYONNAISE_TOPPING);
+                    })
+                ]);
+
+                var menu = new Menu('menu', 'menu', [
+                    new LinkMenuItem('/', 'Главная'),
+                    new NestedMenuItem('Гамбургеры', 'submenu', 'menu', [
+                        new ActionLinkMenuItem('Большой гамбургер', function() { 
+                            cafe.createHamburger(cafe.menu.BIG_HAMBURGER);
+                        }),
+                        new ActionLinkMenuItem('Маленький гамбургер', function() { 
+                            cafe.createHamburger(cafe.menu.SMALL_HAMBURGER);
+                        }),
+                        stuffingMenu,
+                        toppingMenu
+                    ]),
+                    new ActionLinkMenuItem('Купить', function() { 
+                        console.log(cafe.checkOut());
+                    }),
+                    new LinkMenuItem('/about', 'О нас')
+                ]);
+                
+                document.getElementById('navigation-container').appendChild(menu.render());
+                
+                var gallery = new Gallery('backend/gallery.json');
+                document.getElementById('gallery').appendChild(gallery.render());
+                
+                // Food
+            };
+        </script>
+    </head>
+    <body>
+        <div id="navigation-container"></div>
+        <div id="premium-remover">
+            <input type="checkbox" onchange="premiumStuffingMenu.remove(); this.disabled = true;">
+            <span>Эти цены меня расстраивают</span>
+        </div>
+        <div id="dialog"></div>
+        <div id="gallery"></div>
+    </body>
+</html>
