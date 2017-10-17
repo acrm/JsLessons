@@ -1,0 +1,111 @@
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="style.css">
+        <script src="UiElements.js"></script> 
+        <script src="CascadeMenu.js"></script> 
+        <script src="BurgerCafe.js"></script> 
+        <script src="Gallery.js"></script> 
+        <script src="ValidatedInput.js"></script> 
+        <script>            
+            var premiumStuffingMenu;
+            
+            window.onload = function() {
+                // Food
+                var cafe = new BurgerCafe("Пр. Пирожкова, д. 64");
+                
+                // Menu
+                var stuffingMenu = new NestedMenuItem(new TextBlock('Начинки'), [
+                    new MenuItem(new ActionLink(new TextBlock('Сыр'), function() { 
+                        cafe.chooseStuffing(cafe.menu.CHEESE_STUFFING);
+                    })),
+                    new MenuItem(new ActionLink(new TextBlock('Салат'), function() { 
+                        cafe.chooseStuffing(cafe.menu.SALAD_STUFFING);
+                    })),
+                    new MenuItem(new ActionLink(new TextBlock('Картошка'), function() { 
+                        cafe.chooseStuffing(cafe.menu.SALAD_STUFFING);
+                    })),
+                    premiumStuffingMenu = new NestedMenuItem(new TextBlock('Премиальные начинки'), [
+                        new MenuItem(new ActionLink(new TextBlock('Трюфеля'), function() { 
+                            cafe.chooseStuffing(cafe.menu.TRUFFLE_STUFFING);
+                        })),
+                        new MenuItem(new ActionLink(new TextBlock('Омары'), function() { 
+                            cafe.chooseStuffing(cafe.menu.LOBSTER_STUFFING);
+                        }))
+                    ]).setId('premium-menu')
+                ]);
+
+                
+                var toppingMenu = new NestedMenuItem(new TextBlock('Топпинги'), [
+                    new MenuItem(new ActionLink(new TextBlock('Добавить специи'), function() { 
+                        cafe.addTopping(cafe.menu.SPICIES_TOPPING);
+                    })),
+                    new MenuItem(new ActionLink(new TextBlock('Убрать специи'), function() { 
+                        cafe.removeTopping(cafe.menu.SPICIES_TOPPING);
+                    })),
+                    new MenuItem(new ActionLink(new TextBlock('Добавить майонез'), function() { 
+                        cafe.addTopping(cafe.menu.MAYONNAISE_TOPPING);
+                    })),
+                    new MenuItem(new ActionLink(new TextBlock('Убрать майонез'), function() { 
+                        cafe.removeTopping(cafe.menu.MAYONNAISE_TOPPING);
+                    }))
+                ]);
+
+                var menu = new CascadrMenu([
+                    new MenuItem(new Link('/', new TextBlock('Главная'))),
+                    new NestedMenuItem(new TextBlock('Гамбургеры'), [
+                        new MenuItem(new ActionLink(new TextBlock('Большой гамбургер'), function() { 
+                            cafe.createHamburger(cafe.menu.BIG_HAMBURGER);
+                        })),
+                        new MenuItem(new ActionLink(new TextBlock('Маленький гамбургер'), function() { 
+                            cafe.createHamburger(cafe.menu.SMALL_HAMBURGER);
+                        })),
+                        stuffingMenu,
+                        toppingMenu
+                    ]),
+                    new MenuItem(new ActionLink(new TextBlock('Купить'), function() { 
+                        cafe.checkOut();
+                    })),
+                    new MenuItem(new('/about', new TextBlock('О нас')))
+                ]);
+                
+                document.getElementById('navigation-container').appendChild(menu.render());
+                
+                var gallery = new Gallery('backend/gallery.json');
+                document.getElementById('gallery').appendChild(gallery.render());
+                
+                // Contacts
+                var contacts = document.getElementById('contacts');
+                var feedbackForm = new Form('backend/feedbackResponse.json', 'post', [
+                    new FormRow( 
+                        new Label('Имя'),
+                        new TextField('name', 'Имя', 1, validationRules.name)),
+                    new FormRow( 
+                        new Label('Телефон'),
+                        new TextField('phone', 'Телефон', 1, validationRules.phone)),
+                    new FormRow( 
+                            new Label('E-mail'),
+                            new TextField('email', 'E-mail', 1, validationRules.email)),
+                    new FormRow( 
+                        new Label('Сообщение'),
+                        new Container([
+                            new TextField('message', 'Сообщение', 15),
+                            new ActionLink(new TextBlock('Отформатировать текст'), function() {
+
+                            })
+                        ]))
+                ]).setId('feedback');
+                contacts.appendChild(feedbackForm.render());
+            };
+        </script>
+    </head>
+    <body>
+        <div id="navigation-container"></div>
+        <div id="premium-remover">
+            <input type="checkbox" onchange="premiumStuffingMenu.remove(); this.disabled = true;">
+            <span>Эти цены меня расстраивают</span>
+        </div>
+        <div id="dialog"></div>
+        <div id="gallery"></div>
+        <div id="contacts"></div>
+    </body>
+</html>
