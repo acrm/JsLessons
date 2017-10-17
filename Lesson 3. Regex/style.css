@@ -159,3 +159,30 @@ ul.menu li:hover > p > ul.menu {
         0 4px 8px 0 rgba(0, 0, 0, 0.2),
         0 6px 20px 0 rgba(0, 0, 0, 0.2);
 }
+
+.validation-wrapper {
+    padding: 0px;
+}
+.validation-wrapper > input {
+    margin: 0px;
+}
+
+.validation-wrapper.valid > input {
+    border: 2px solid green;
+}
+
+.validation-wrapper.valid:after  {
+    content: '✓';
+    color: green;
+    margin: 0px 10px 0px 10px;
+}
+
+.validation-wrapper.invalid > input {
+    border: 2px solid red;
+}
+
+.validation-wrapper.invalid:after  {
+    content: attr(data-validation-message);
+    color: red;
+    margin: 0px 10px 0px 10px;
+}

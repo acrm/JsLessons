@@ -1,9 +1,11 @@
 <html>
     <head>
         <link rel="stylesheet" type="text/css" href="style.css">
-        <script src="menu_script.js"></script> 
+        <script src="UiElements.js"></script> 
+        <script src="CascadeMenu.js"></script> 
         <script src="BurgerCafe.js"></script> 
-        <script src="gallery.js"></script> 
+        <script src="Gallery.js"></script> 
+        <script src="ValidatedInput.js"></script> 
         <script>            
             var premiumStuffingMenu;
             
@@ -12,59 +14,58 @@
                 var cafe = new BurgerCafe("Пр. Пирожкова, д. 64");
                 
                 // Menu
-
-                var stuffingMenu = new NestedMenuItem('Начинки', 'submenu', 'menu', [
-                    new ActionLinkMenuItem('Сыр', function() { 
+                var stuffingMenu = new NestedMenuItem(new TextBlock('Начинки'), [
+                    new MenuItem(new ActionLink(new TextBlock('Сыр'), function() { 
                         cafe.chooseStuffing(cafe.menu.CHEESE_STUFFING);
-                    }),
-                    new ActionLinkMenuItem('Салат', function() { 
+                    })),
+                    new MenuItem(new ActionLink(new TextBlock('Салат'), function() { 
                         cafe.chooseStuffing(cafe.menu.SALAD_STUFFING);
-                    }),
-                    new ActionLinkMenuItem('Картошка', function() { 
+                    })),
+                    new MenuItem(new ActionLink(new TextBlock('Картошка'), function() { 
                         cafe.chooseStuffing(cafe.menu.SALAD_STUFFING);
-                    }),
-                    premiumStuffingMenu = new NestedMenuItem('Премиальные начинки', 'premium-menu', 'menu', [
-                        new ActionLinkMenuItem('Трюфеля', function() { 
+                    })),
+                    premiumStuffingMenu = new NestedMenuItem(new TextBlock('Премиальные начинки'), [
+                        new MenuItem(new ActionLink(new TextBlock('Трюфеля'), function() { 
                             cafe.chooseStuffing(cafe.menu.TRUFFLE_STUFFING);
-                        }),
-                        new ActionLinkMenuItem('Омары', function() { 
+                        })),
+                        new MenuItem(new ActionLink(new TextBlock('Омары'), function() { 
                             cafe.chooseStuffing(cafe.menu.LOBSTER_STUFFING);
-                        })
-                    ])
+                        }))
+                    ]).setId('premium-menu')
                 ]);
 
                 
-                var toppingMenu = new NestedMenuItem('Топпинги', 'submenu', 'menu', [
-                    new ActionLinkMenuItem('Добавить специи', function() { 
+                var toppingMenu = new NestedMenuItem(new TextBlock('Топпинги'), [
+                    new MenuItem(new ActionLink(new TextBlock('Добавить специи'), function() { 
                         cafe.addTopping(cafe.menu.SPICIES_TOPPING);
-                    }),
-                    new ActionLinkMenuItem('Убрать специи', function() { 
+                    })),
+                    new MenuItem(new ActionLink(new TextBlock('Убрать специи'), function() { 
                         cafe.removeTopping(cafe.menu.SPICIES_TOPPING);
-                    }),
-                    new ActionLinkMenuItem('Добавить майонез', function() { 
+                    })),
+                    new MenuItem(new ActionLink(new TextBlock('Добавить майонез'), function() { 
                         cafe.addTopping(cafe.menu.MAYONNAISE_TOPPING);
-                    }),
-                    new ActionLinkMenuItem('Убрать майонез', function() { 
+                    })),
+                    new MenuItem(new ActionLink(new TextBlock('Убрать майонез'), function() { 
                         cafe.removeTopping(cafe.menu.MAYONNAISE_TOPPING);
-                    })
+                    }))
                 ]);
 
-                var menu = new Menu('menu', 'menu', [
-                    new LinkMenuItem('/', 'Главная'),
-                    new NestedMenuItem('Гамбургеры', 'submenu', 'menu', [
-                        new ActionLinkMenuItem('Большой гамбургер', function() { 
+                var menu = new CascadrMenu([
+                    new MenuItem(new Link('/', new TextBlock('Главная'))),
+                    new NestedMenuItem(new TextBlock('Гамбургеры'), [
+                        new MenuItem(new ActionLink(new TextBlock('Большой гамбургер'), function() { 
                             cafe.createHamburger(cafe.menu.BIG_HAMBURGER);
-                        }),
-                        new ActionLinkMenuItem('Маленький гамбургер', function() { 
+                        })),
+                        new MenuItem(new ActionLink(new TextBlock('Маленький гамбургер'), function() { 
                             cafe.createHamburger(cafe.menu.SMALL_HAMBURGER);
-                        }),
+                        })),
                         stuffingMenu,
                         toppingMenu
                     ]),
-                    new ActionLinkMenuItem('Купить', function() { 
-                        console.log(cafe.checkOut());
-                    }),
-                    new LinkMenuItem('/about', 'О нас')
+                    new MenuItem(new ActionLink(new TextBlock('Купить'), function() { 
+                        cafe.checkOut();
+                    })),
+                    new MenuItem(new('/about', new TextBlock('О нас')))
                 ]);
                 
                 document.getElementById('navigation-container').appendChild(menu.render());
@@ -72,7 +73,28 @@
                 var gallery = new Gallery('backend/gallery.json');
                 document.getElementById('gallery').appendChild(gallery.render());
                 
-                // Food
+                // Contacts
+                var contacts = document.getElementById('contacts');
+                var feedbackForm = new Form('backend/feedbackResponse.json', 'post', [
+                    new FormRow( 
+                        new Label('Имя'),
+                        new TextField('name', 'Имя', 1, validationRules.name)),
+                    new FormRow( 
+                        new Label('Телефон'),
+                        new TextField('phone', 'Телефон', 1, validationRules.phone)),
+                    new FormRow( 
+                            new Label('E-mail'),
+                            new TextField('email', 'E-mail', 1, validationRules.email)),
+                    new FormRow( 
+                        new Label('Сообщение'),
+                        new Container([
+                            new TextField('message', 'Сообщение', 15),
+                            new ActionLink(new TextBlock('Отформатировать текст'), function() {
+
+                            })
+                        ]))
+                ]).setId('feedback');
+                contacts.appendChild(feedbackForm.render());
             };
         </script>
     </head>
@@ -84,5 +106,6 @@
         </div>
         <div id="dialog"></div>
         <div id="gallery"></div>
+        <div id="contacts"></div>
     </body>
 </html>

@@ -1,32 +1,30 @@
-// Label
-function Label(text) {
-    Container.call(this);
+function Popup() { }
+Popup.show = function (contentElement) {
+    var popupOverlay = document.createElement('div');
+    popupOverlay.id = 'popup-overlay';
+    popupOverlay.classList.add('popup-overlay');
+
+    var popup = document.createElement('div');
+    popup.classList.add('popup');
+
+    if(typeof contentElement === 'String') {
+        popup.innerHTML = contentElement;
+    }
+    else if(contentElement instanceof BaseUiElement) {
+        popup.appendChild(contentElement.render());
+    }
+
+    popupOverlay.appendChild(popup);
     
-    this.text = text;
-}
-Label.prototype = Object.create(Container.prototype);
-Label.prototype.constructor = Label;
-Label.prototype.render = function() {
-    var span = document.createElement('span');
-    span.innerHTML = this.text;
-    return span;
+    var close = new ActionLink(function() { popupOverlay.remove(); }, 'x');
+    close.className = 'popup-close';
+    popupOverlay.appendChild(close.render());
+    
+    document.body.appendChild(popupOverlay);
 }
 
-/**
- * Класс галереи картинок, с предпросмотром и асинхронной загрузкой полных изображений.
- * 
- * @constructor  
- * @param sourceUrl Адрес загрузки данных
- */
-function Gallery(sourceUrl) {
-    Container.call(this);
-    this.sourceUrl = sourceUrl;
-    this.previewsLoaded = false;
-    this.galleryData = [];
-}
-Gallery.prototype = Object.create(Container.prototype);
-Gallery.prototype.constructor = Gallery;
-Gallery.prototype.get = function(url, onDone) {
+function Http() {}
+Http.get = function(url, onDone) {
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function(){
         if(xhr.readyState === XMLHttpRequest.DONE) {
@@ -39,36 +37,31 @@ Gallery.prototype.get = function(url, onDone) {
     xhr.open('GET', url, true);
     xhr.send();
 }
+
+/**
+ * Класс галереи картинок, с предпросмотром и асинхронной загрузкой полных изображений.
+ * 
+ * @constructor  
+ * @param sourceUrl Адрес загрузки данных
+ */
+function Gallery(id, className, sourceUrl) {
+    Container.call(this, id, className, []);
+    this.sourceUrl = sourceUrl;
+    this.previewsLoaded = false;
+    this.galleryData = [];
+}
+Gallery.prototype = Object.create(Container.prototype);
+Gallery.prototype.constructor = Gallery;
 Gallery.prototype.loadPreviews = function(onLoad) {
     if(this.previewsLoaded) return;
     
-    this.get(this.sourceUrl, function(galleryData) {
+    Http.get(this.sourceUrl, function(galleryData) {
         this.galleryData = galleryData;
         this.previewsLoaded = true;
         onLoad();
     });
 }
-Gallery.prototype.showFull = function (fullUrl) {
-    var popupOverlay = document.createElement('div');
-    popupOverlay.id = 'popup-overlay';
-    popupOverlay.classList.add('popup-overlay');
-
-    var popup = document.createElement('div');
-    popup.classList.add('popup');
-
-    var img = document.createElement('img');
-    img.src = fullUrl;
-    popup.appendChild(img);
-    popupOverlay.appendChild(popup);
-    
-    var close = new ActionLink(function() { popupOverlay.remove(); }, 'x');
-    close.className = 'popup-close';
-    popupOverlay.appendChild(close.render());
-    
-    document.body.appendChild(popupOverlay);
-}
-Gallery.prototype.render = function() {
-    var gallery = this;
+Gallery.prototype.renderWrapper = function() {
     var loadingWrapper = document.createElement('div');
     if(!this.previewsLoaded) {
         loadingWrapper.innerHTML = "Loading preview";
@@ -77,24 +70,22 @@ Gallery.prototype.render = function() {
 
     this.loadPreviews(function () {        
         var container = document.createElement('div');
+
         this.galleryData.forEach(function(element) {
-            var bind = function(data) {
+            var img = document.createElement('img');
+            img.src = data.thumb;
+            img.classList.add('preview');            
+            img.onclick = function() {
                 var img = document.createElement('img');
-                img.src = data.thumb;
-                img.classList.add('preview');            
-                img.onclick = function() {
-                    gallery.showFull(data.full);
-                }
+                img.src = data.full;
                 
-                container.appendChild(img);
+                Popup.show(img);
             }
-            bind(element);
+            this.children.push(img);
         });
         loadingWrapper.innerHTML = '';
         loadingWrapper.classList.remove('loading');
-        loadingWrapper.appendChild(container);
     });
 
     return loadingWrapper;
 }
-
