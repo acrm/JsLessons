@@ -70,6 +70,11 @@ ul.menu li:hover > p > ul.menu {
     color: gold;
 }
 
+.frustration-item {
+    color: white;
+    background-color: #f33;
+}
+
 #premium-remover {
     display: flex;
     align-items: center;
@@ -186,3 +191,36 @@ ul.menu li:hover > p > ul.menu {
     color: red;
     margin: 0px 10px 0px 10px;
 }
+
+form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+}
+
+.form-row {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.form-row .label-cell {
+    width: 200px;
+    padding: 5px;
+    display: flex;
+    justify-content: flex-end;
+    border: 1px solid #0f0;
+}
+
+.form-row .input-cell {
+    width: 100%;
+    padding: 5px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    border: 1px solid #0ff;
+}
+

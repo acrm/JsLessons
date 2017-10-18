@@ -21,7 +21,7 @@ var validationRules = {
  * @param   {String} placeholder Поясняющий текст в поле
  * @param   validationRule { pattern: 'валидирующий шаблон', hint: 'подсказка валидации' }
  */ 
-function TextField(name, placeholder, validationRule, linesNumber) {
+function TextField(name, placeholder, linesNumber, validationRule) {
     BaseUiElement.call(this);  
     this.name = name;
     this.placeholder = placeholder;
@@ -47,9 +47,10 @@ TextField.prototype.render = function() {
     input.placeholder = this.placeholder;
     validationWrapper.appendChild(input);
 
+    var pattern;
     if(this.validationRule) {
         validationWrapper.setAttribute('data-validation-message', this.validationRule.hint)    
-        var pattern = this.validationRule.pattern;
+        pattern = this.validationRule.pattern;
     }
     input.addEventListener('input', function(event) {
         if(!pattern) return;

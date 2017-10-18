@@ -25,6 +25,9 @@
                         cafe.chooseStuffing(cafe.menu.SALAD_STUFFING);
                     })),
                     premiumStuffingMenu = new NestedMenuItem(new TextBlock('Премиальные начинки'), [
+                        new MenuItem(new ActionLink(new TextBlock('Эти цены меня расстраивают'), function() { 
+                            premiumStuffingMenu.remove();
+                        })).addClass('frustration-item'),    
                         new MenuItem(new ActionLink(new TextBlock('Трюфеля'), function() { 
                             cafe.chooseStuffing(cafe.menu.TRUFFLE_STUFFING);
                         })),
@@ -33,8 +36,7 @@
                         }))
                     ]).setId('premium-menu')
                 ]);
-
-                
+    
                 var toppingMenu = new NestedMenuItem(new TextBlock('Топпинги'), [
                     new MenuItem(new ActionLink(new TextBlock('Добавить специи'), function() { 
                         cafe.addTopping(cafe.menu.SPICIES_TOPPING);
@@ -50,7 +52,7 @@
                     }))
                 ]);
 
-                var menu = new CascadrMenu([
+                var menu = new CascadeMenu([
                     new MenuItem(new Link('/', new TextBlock('Главная'))),
                     new NestedMenuItem(new TextBlock('Гамбургеры'), [
                         new MenuItem(new ActionLink(new TextBlock('Большой гамбургер'), function() { 
@@ -65,7 +67,7 @@
                     new MenuItem(new ActionLink(new TextBlock('Купить'), function() { 
                         cafe.checkOut();
                     })),
-                    new MenuItem(new('/about', new TextBlock('О нас')))
+                    new MenuItem(new Link('/about', new TextBlock('О нас')))
                 ]);
                 
                 document.getElementById('navigation-container').appendChild(menu.render());
@@ -100,10 +102,6 @@
     </head>
     <body>
         <div id="navigation-container"></div>
-        <div id="premium-remover">
-            <input type="checkbox" onchange="premiumStuffingMenu.remove(); this.disabled = true;">
-            <span>Эти цены меня расстраивают</span>
-        </div>
         <div id="dialog"></div>
         <div id="gallery"></div>
         <div id="contacts"></div>

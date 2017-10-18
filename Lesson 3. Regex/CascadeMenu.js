@@ -43,7 +43,7 @@ MenuItem.prototype.render = function() {
 function NestedMenuItem(caption, items) {
   MenuItem.call(this);
   this.caption = caption; 
-  this.submenu = new CascadeMenu(items, id, className);  
+  this.submenu = new CascadeMenu(items);  
 }
 NestedMenuItem.prototype = Object.create(MenuItem.prototype);
 NestedMenuItem.prototype.constructor = NestedMenuItem;

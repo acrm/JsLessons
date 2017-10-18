@@ -93,6 +93,22 @@ TextBlock.prototype.render = function() {
     return span;
 }
 
+
+// Image
+function Image(source) {
+    BaseUiElement.call(this);
+    
+    this.source = source;
+}
+Image.prototype = Object.create(BaseUiElement.prototype);
+Image.prototype.constructor = Image;
+Image.prototype.render = function() {
+    var img = document.createElement('img');
+    this.applyBaseProperties(img);
+    img.src = this.source;
+    return img; 
+}
+
 // ActionLink
 function ActionLink(content, action) {
     Link.call(this, '#', content);
@@ -108,33 +124,12 @@ ActionLink.prototype.render = function() {
     return aHref;
 }
 
-
-function FormRow(label, input) {
-    BaseUiElement.call(this);
-    this.label = label;
-    this.input = input;
-}
-FormRow.prototype = Object.create(BaseUiElement.prototype);
-FormRow.prototype.create = FormRow;
-FormRow.prototype.render = function() {
-    var container = document.createElement('div');
-    this.applyBaseProperties(container);
-    container.appendChild(this.label);
-    container.appendChild(this.input);
-
-    if(this.input.id) {
-        this.label.for = this.input.id;
-    }
-
-    return container;
-}
-
 function Container(children) {
     BaseUiElement.call(this);
     this.children = children;    
 }
-Container.prototype = Object.create(Container.prototype);
-Container.prototype.create = Container;
+Container.prototype = Object.create(BaseUiElement.prototype);
+Container.prototype.constructor = Container;
 Container.prototype.renderWrapper = function() {
     return document.createElement('div');
 }
@@ -144,7 +139,7 @@ Container.prototype.render = function() {
 
     this.children.forEach(function(el) {
         if(el instanceof BaseUiElement) {
-            container.appendChild(el.render);
+            container.appendChild(el.render());
         }
     });
     
@@ -156,13 +151,43 @@ function Form(url, method, children) {
     this.url = url;
     this.method = method;
 }
-Container.prototype = Object.create(Container.prototype);
-Container.prototype.create = Container;
-Container.prototype.renderWrapper = function() {
+Form.prototype = Object.create(Container.prototype);
+Form.prototype.create = Container;
+Form.prototype.renderWrapper = function() {
     var form = document.createElement('form');
     form.action = this.url;
     form.method = this.method;
     return form;
+}
+
+
+function FormRow(label, input) {
+    BaseUiElement.call(this);
+    this.label = label;
+    this.input = input;
+}
+FormRow.prototype = Object.create(BaseUiElement.prototype);
+FormRow.prototype.create = FormRow;
+FormRow.prototype.render = function() {
+    var container = document.createElement('div');
+    this.applyBaseProperties(container);
+    container.classList.add('form-row');
+    
+    var labelCell = document.createElement('div');
+    labelCell.classList.add('label-cell');
+    labelCell.appendChild(this.label.render());
+    container.appendChild(labelCell);
+
+    var inputCell = document.createElement('div');
+    inputCell.classList.add('input-cell');
+    inputCell.appendChild(this.input.render());
+    container.appendChild(inputCell);
+
+    if(this.input.id) {
+        this.label.for = this.input.id;
+    }
+
+    return container;
 }
 
 function Label(text) {
@@ -171,7 +196,7 @@ function Label(text) {
 }
 Label.prototype = Object.create(BaseUiElement.prototype);
 Label.prototype.create = Label;
-Label.prototype.renderWrapper = function() {
+Label.prototype.render = function() {
     var label = document.createElement('label');
     label.innerHTML = this.text;
     return label;
