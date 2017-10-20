@@ -212,7 +212,6 @@ form {
     padding: 5px;
     display: flex;
     justify-content: flex-end;
-    border: 1px solid #0f0;
 }
 
 .form-row .input-cell {
@@ -221,6 +220,25 @@ form {
     display: flex;
     justify-content: flex-start;
     align-items: flex-start;
-    border: 1px solid #0ff;
+    flex-direction: column;
 }
 
+ul.tabs {
+    display: flex;
+    justify-content: flex-start;
+    align-items: stretch;
+    list-style: none;
+    border: 1px solid #000;
+    border-radius: 5px;
+    background-color: #6c6;
+}
+
+.tabs li {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    margin: 0px;
+    font-size: 20px;
+    font-family: sans-serif;
+    list-style-type: none;
+}

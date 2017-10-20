@@ -217,3 +217,43 @@ BasketPreview.prototype.render = function() {
     return container.render();
 }
 
+function Popup() { }
+Popup.show = function (contentElement) {
+    var popupOverlay = document.createElement('div');
+    popupOverlay.id = 'popup-overlay';
+    popupOverlay.classList.add('popup-overlay');
+
+    var popup = document.createElement('div');
+    popup.classList.add('popup');
+
+    if(typeof contentElement === 'String') {
+        popup.innerHTML = contentElement;
+    }
+    else if(contentElement instanceof BaseUiElement) {
+        popup.appendChild(contentElement.render());
+    }
+
+    popupOverlay.appendChild(popup);
+    
+    var close = new ActionLink(new TextBlock('x'), function() { popupOverlay.remove(); });
+    close.addClass('popup-close');
+    popupOverlay.appendChild(close.render());
+    
+    document.body.appendChild(popupOverlay);
+}
+
+function Http() {}
+Http.get = function(url, onDone) {
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function(){
+        if(xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+                var responseData = JSON.parse(xhr.responseText);
+                onDone(responseData);
+            }
+        }
+    };
+    xhr.open('GET', url, true);
+    xhr.send();
+}
+
