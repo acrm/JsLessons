@@ -16,6 +16,22 @@ function BaseUiElement() {
     this.id = null;
     this.classList = [];
 }
+BaseUiElement.renderSomething = function(something) {
+    if(typeof something === 'String') {
+        var wrapper = document.createElement('span');
+        wrapper.innerHTML = something;
+        return wrapper;
+    }
+    else if(something instanceof BaseUiElement) {
+        return something.render();
+    }
+    else if(something instanceof Node) {
+        return something;
+    }
+    else {
+        throw new UiException('Element cannot be rendered');
+    }
+}
 BaseUiElement.prototype.setId = function(id) {
     this.id = id;
     return this;
@@ -54,6 +70,35 @@ BaseUiElement.prototype.remove = function() {
     }
 }
 
+function Container(children) {
+    BaseUiElement.call(this);
+    this.children = children ? children : [];
+    this.container = null;    
+}
+Container.prototype = Object.create(BaseUiElement.prototype);
+Container.prototype.constructor = Container;
+Container.prototype.renderWrapper = function() {
+    return document.createElement('div');
+}
+Container.prototype.render = function() {
+    var self = this;
+    this.container = this.renderWrapper();
+    this.applyBaseProperties(this.container);
+    this.children.forEach(function(el) {
+        self.container.appendChild(BaseUiElement.renderSomething(el));
+    });
+    
+    return this.container;
+}
+Container.prototype.addChild = function(child) {
+    if(this.container) {
+        this.container.appendChild(BaseUiElement.renderSomething(el));
+    }
+    else {
+        this.children.push(child);
+    }
+}
+
 // Link
 function Link(href, content) {
     BaseUiElement.call(this);
@@ -83,14 +128,22 @@ function TextBlock(text) {
     BaseUiElement.call(this);
     
     this.text = text;
+    this.span = null;
 }
 TextBlock.prototype = Object.create(BaseUiElement.prototype);
 TextBlock.prototype.constructor = TextBlock;
 TextBlock.prototype.render = function() {
     var span = document.createElement('span');
     this.applyBaseProperties(span);
-    span.innerHTML = this.text;
+    span.innerText = this.text;
+    this.span = span;
     return span;
+}
+TextBlock.prototype.setText = function(text) {
+    this.text = text;
+    if(this.span) {     
+        this.span.innerText = this.text;
+    }
 }
 
 
@@ -122,28 +175,6 @@ ActionLink.prototype.render = function() {
     var aHref = this.baseRender();
     aHref.onclick = this.action;
     return aHref;
-}
-
-function Container(children) {
-    BaseUiElement.call(this);
-    this.children = children;    
-}
-Container.prototype = Object.create(BaseUiElement.prototype);
-Container.prototype.constructor = Container;
-Container.prototype.renderWrapper = function() {
-    return document.createElement('div');
-}
-Container.prototype.render = function() {
-    var container = this.renderWrapper();
-    this.applyBaseProperties(container);
-
-    this.children.forEach(function(el) {
-        if(el instanceof BaseUiElement) {
-            container.appendChild(el.render());
-        }
-    });
-    
-    return container;
 }
 
 function Form(url, method, children) {
@@ -242,16 +273,44 @@ Http.get = function(url, onDone) {
     xhr.send();
 }
 
-function BasketPreview() {
+function ShoppingBasketItem(productId, count) {
+    BaseUiElement.call(this);
+    this.productId = productId;
+    this.count = count;
+    this.price = null;
+    this.name = null;
+    this.isLoaded = false;
+}
+ShoppingBasketItem.prototype = Object.create(BaseUiElement.prototype);
+ShoppingBasketItem.prototype.constructor = ShoppingBasketItem;
+ShoppingBasketItem.prototype.render = function() {
+    var item = document.createElement('li');
+
+    return item;
+}
+
+function ShoppingBasketContent() {
     BaseUiElement.call(this);
 }
-BasketPreview.prototype = Object.create(BaseUiElement.prototype);
-BasketPreview.prototype.constructor = BasketPreview;
-BasketPreview.prototype.render = function() {
+ShoppingBasketContent.prototype = Object.create(BaseUiElement.prototype);
+ShoppingBasketContent.prototype.constructor = ShoppingBasketContent;
+ShoppingBasketContent.prototype.render = function() {
+
+}
+
+function ShoppingBasketPreview() {
+    BaseUiElement.call(this);
+}
+ShoppingBasketPreview.prototype = Object.create(BaseUiElement.prototype);
+ShoppingBasketPreview.prototype.constructor = ShoppingBasketPreview;
+ShoppingBasketPreview.prototype.render = function() {
+    var totalPrice;
     var container = new Container([
-        new TextBlock('0').addClass('price'),
+        totalPrice = new TextBlock('0').addClass('price'),
         new ActionLink(new Image('assets/shopping-cart.png'), function () {
-            Popup.show(new TextBlock('Корзина изнутри'));
+            Popup.show(new ActionLink(new TextBlock('Увеличить счётчик'), function () {  
+                totalPrice.setText(parseInt(totalPrice.text) + 1);                
+            }));            
         })
     ]).addClass('basket-preview');
     return container.render();

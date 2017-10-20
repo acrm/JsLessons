@@ -1,3 +1,49 @@
+function LoadingWrapper(placeholder) {
+    BaseUiElement.call(this);
+    this.placeholder = placeholder;
+    this.placeholderElement = null;
+    this.isRendered = false;
+    this.isComplete = false;
+    this.completeContentProvider = null;
+    this.wrapper = null;
+}
+LoadingWrapper.prototype = Object.create(BaseUiElement.prototype);
+LoadingWrapper.prototype.constructor = LoadingWrapper;
+LoadingWrapper.prototype.replacePlaceholder = function(completeContent) { 
+    if(this.placeholderElement) {
+        this.wrapper.removeChild(this.placeholderElement);
+    }
+    this.wrapper.classList.remove('loading');
+    this.wrapper.appendChild(completeContent);
+}
+LoadingWrapper.prototype.render = function() {
+    this.wrapper = document.createElement('div');
+    if(!this.isComplete || !this.completeContent) {
+        this.placeholderElement = BaseUiElement.renderSomething(this.placeholder);
+        this.wrapper.appendChild(this.placeholderElement);
+        this.wrapper.classList.add('loading');
+    }
+    else if(this.completeContent) {
+        this.replacePlaceholder(this.completeContent);
+    }
+    
+    this.isRendered = true;
+    return this.wrapper;
+}
+LoadingWrapper.prototype.complete = function() {
+    this.isComplete = true;
+    if(this.completeContent){
+        this.replacePlaceholder(this.completeContent);
+    }
+}
+LoadingWrapper.prototype.onComplete = function(getCompleteContent) {
+    this.completeContent = getCompleteContent();
+    if(this.isComplete && this.isRendered) {        
+        this.replacePlaceholder(this.completeContent);       
+    }
+}
+
+
 /**
  * Класс галереи картинок, с предпросмотром и асинхронной загрузкой полных изображений.
  * 
@@ -9,40 +55,38 @@ function Gallery(sourceUrl) {
     this.sourceUrl = sourceUrl;
     this.previewsLoaded = false;
     this.galleryData = [];
+    this.loadingWrapper = new LoadingWrapper(new TextBlock('Loading preview'));
 }
 Gallery.prototype = Object.create(BaseUiElement.prototype);
 Gallery.prototype.constructor = Gallery;
-Gallery.prototype.loadPreviews = function(onLoad) {
-    if(this.previewsLoaded) return;
+Gallery.prototype.loadPreviews = function() {
+    var self = this;
+    if(self.previewsLoaded) return;
     
-    Http.get(this.sourceUrl, function(galleryData) {
-        this.galleryData = galleryData;
-        this.previewsLoaded = true;
-        onLoad();
+    Http.get(self.sourceUrl, function(galleryData) {
+        self.galleryData = galleryData ? galleryData : [];
+        self.loadingWrapper.complete();
+        self.previewsLoaded = true;
     });
 }
 Gallery.prototype.render = function() {
-    var gallery = this;     
-    var loadingWrapper = document.createElement('div');
-    if(!this.previewsLoaded) {
-        loadingWrapper.innerHTML = "Loading preview";
-        loadingWrapper.classList.add('loading');
+    var self = this;
+    if(!self.previewsLoaded) {
+        self.loadPreviews();
     }
-
-    this.loadPreviews(function () {   
-        loadingWrapper.innerHTML = '';
-        loadingWrapper.classList.remove('loading');
-
-        this.galleryData.forEach(function(element) {
+    self.loadingWrapper.onComplete(function() {
+        var container = new Container();
+        self.galleryData.forEach(function(element) {
             var preview = new Image(element.thumb);
             preview.addClass('preview');
             var link = new ActionLink(preview, function() {
                 var fullImg = new Image(element.full);                
                 Popup.show(fullImg);
             });
-            loadingWrapper.appendChild(link.render());
+            container.appendChild(link.render());
         });
-    });
-
-    return loadingWrapper;
+        return container.render(); 
+    });  
+    
+    return self.loadingWrapper.render();
 }

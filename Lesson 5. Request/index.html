@@ -70,7 +70,7 @@
                     new MenuItem(new Link('/about', new TextBlock('О нас')))
                 ]);
                 
-                var header = new Container([menu, new BasketPreview()]).addClass('header');
+                var header = new Container([menu, new ShoppingBasketPreview()]).addClass('header');
                 document.getElementById('header').appendChild(header.render());
                 
                 var gallery = new Gallery('http://localhost:3000/gallery');
