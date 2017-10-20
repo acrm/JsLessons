@@ -70,9 +70,10 @@
                     new MenuItem(new Link('/about', new TextBlock('О нас')))
                 ]);
                 
-                document.getElementById('navigation-container').appendChild(menu.render());
+                var header = new Container([menu, new BasketPreview()]).addClass('header');
+                document.getElementById('header').appendChild(header.render());
                 
-                var gallery = new Gallery('backend/gallery.json');
+                var gallery = new Gallery('http://localhost:3000/gallery');
                 document.getElementById('gallery').appendChild(gallery.render());
                 
                 // Contacts
@@ -101,9 +102,10 @@
         </script>
     </head>
     <body>
-        <div id="navigation-container"></div>
+        <div id="header"></div>
         <div id="dialog"></div>
         <div id="gallery"></div>
         <div id="contacts"></div>
+        <div id="credits">Icons made by <a href="http://s-ings.com/typicons/">Stephen Hutchings</a> from <a href="www.flaticon.com">www.flaticon.com</a> </div>
     </body>
 </html>

@@ -1,7 +1,15 @@
-#navigation-container > ul.menu {
+.header  {
+    height: 50px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: stretch;
+}
+
+.header > ul.menu {
     background-color: #f90;
     position: relative;
     height: 50px;
+    width: 100%;
 }
 
 ul.menu {
@@ -12,6 +20,7 @@ ul.menu {
     border: 1px solid #000;
     border-radius: 5px;
     background-color: #6c6;
+    margin: 5px;
 }
 
 .menu li {
@@ -212,7 +221,6 @@ form {
     padding: 5px;
     display: flex;
     justify-content: flex-end;
-    border: 1px solid #0f0;
 }
 
 .form-row .input-cell {
@@ -221,6 +229,31 @@ form {
     display: flex;
     justify-content: flex-start;
     align-items: flex-start;
-    border: 1px solid #0ff;
+}
+
+.basket-preview {
+    width: 120px;
+    height: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    list-style: none;
+    border: 1px solid #000;
+    border-radius: 5px;
+    background-color: #c66;
+    margin: 5px;
+    padding: 0px 20px 0px 10px;
+    color:  rgb(154, 220, 90);
+    font-family: sans-serif;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.basket-preview .price {
+}
+
+.basket-preview .price:after {
+    content: 'р.';
+    margin: 0px 5px 0px 2px ;
 }
 

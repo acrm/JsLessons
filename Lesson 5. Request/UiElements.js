@@ -202,18 +202,58 @@ Label.prototype.render = function() {
     return label;
 }
 
+function Popup() { }
+Popup.show = function (contentElement) {
+    var popupOverlay = document.createElement('div');
+    popupOverlay.id = 'popup-overlay';
+    popupOverlay.classList.add('popup-overlay');
+
+    var popup = document.createElement('div');
+    popup.classList.add('popup');
+
+    if(typeof contentElement === 'String') {
+        popup.innerHTML = contentElement;
+    }
+    else if(contentElement instanceof BaseUiElement) {
+        popup.appendChild(contentElement.render());
+    }
+
+    popupOverlay.appendChild(popup);
+    
+    var close = new ActionLink(new TextBlock('x'), function() { popupOverlay.remove(); });
+    close.addClass('popup-close');
+    popupOverlay.appendChild(close.render());
+    
+    document.body.appendChild(popupOverlay);
+}
+
+function Http() {}
+Http.get = function(url, onDone) {
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function(){
+        if(xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+                var responseData = JSON.parse(xhr.responseText);
+                onDone(responseData);
+            }
+        }
+    };
+    xhr.open('GET', url, true);
+    xhr.send();
+}
+
 function BasketPreview() {
     BaseUiElement.call(this);
 }
 BasketPreview.prototype = Object.create(BaseUiElement.prototype);
 BasketPreview.prototype.constructor = BasketPreview;
 BasketPreview.prototype.render = function() {
-    var container = new Container(
-        new TextBlock('Корзина'),
-        new ActionLink(new TextBlock('Открыть'), function () {
-            
+    var container = new Container([
+        new TextBlock('0').addClass('price'),
+        new ActionLink(new Image('assets/shopping-cart.png'), function () {
+            Popup.show(new TextBlock('Корзина изнутри'));
         })
-    );
+    ]).addClass('basket-preview');
     return container.render();
 }
 
