@@ -240,7 +240,7 @@ form {
     list-style: none;
     border: 1px solid #000;
     border-radius: 5px;
-    background-color: #c66;
+    background-color: #939;
     margin: 5px;
     padding: 0px 20px 0px 10px;
     color:  rgb(154, 220, 90);
@@ -249,7 +249,8 @@ form {
     font-weight: bold;
 }
 
-.basket-preview .price {
+.basket-preview:hover {
+    background-color: #c6c;
 }
 
 .basket-preview .price:after {

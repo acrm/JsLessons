@@ -9,22 +9,22 @@ function LoadingWrapper(placeholder) {
 }
 LoadingWrapper.prototype = Object.create(BaseUiElement.prototype);
 LoadingWrapper.prototype.constructor = LoadingWrapper;
-LoadingWrapper.prototype.replacePlaceholder = function(completeContent) { 
+LoadingWrapper.prototype.replacePlaceholder = function(completeContentProvider) { 
     if(this.placeholderElement) {
         this.wrapper.removeChild(this.placeholderElement);
     }
     this.wrapper.classList.remove('loading');
-    this.wrapper.appendChild(completeContent);
+    this.wrapper.appendChild(completeContentProvider());
 }
 LoadingWrapper.prototype.render = function() {
     this.wrapper = document.createElement('div');
-    if(!this.isComplete || !this.completeContent) {
+    if(!this.isComplete || !this.completeContentProvider) {
         this.placeholderElement = BaseUiElement.renderSomething(this.placeholder);
         this.wrapper.appendChild(this.placeholderElement);
         this.wrapper.classList.add('loading');
     }
-    else if(this.completeContent) {
-        this.replacePlaceholder(this.completeContent);
+    else if(this.completeContentProvider) {
+        this.replacePlaceholder(this.completeContentProvider);
     }
     
     this.isRendered = true;
@@ -32,14 +32,14 @@ LoadingWrapper.prototype.render = function() {
 }
 LoadingWrapper.prototype.complete = function() {
     this.isComplete = true;
-    if(this.completeContent){
-        this.replacePlaceholder(this.completeContent);
+    if(this.completeContentProvider){
+        this.replacePlaceholder(this.completeContentProvider);
     }
 }
-LoadingWrapper.prototype.onComplete = function(getCompleteContent) {
-    this.completeContent = getCompleteContent();
+LoadingWrapper.prototype.onComplete = function(completeContentProvider) {
+    this.completeContentProvider = completeContentProvider;
     if(this.isComplete && this.isRendered) {        
-        this.replacePlaceholder(this.completeContent);       
+        this.replacePlaceholder(this.completeContentProvider);       
     }
 }
 
@@ -83,7 +83,7 @@ Gallery.prototype.render = function() {
                 var fullImg = new Image(element.full);                
                 Popup.show(fullImg);
             });
-            container.appendChild(link.render());
+            container.addChild(link.render());
         });
         return container.render(); 
     });  
