@@ -1,5 +1,6 @@
 // Food
-function Food() {
+function Food(name) {
+    this.name = name;
 }
 Food.prototype.calcPrice = function() {
     return 0;
@@ -9,8 +10,8 @@ Food.prototype.calcCalories = function() {
 }
 
 // SimpleFood
-function SimpleFood(price, calories) {
-    Food.call(this);
+function SimpleFood(name, price, calories) {
+    Food.call(this, name);
     this.price = price;
     this.calories = calories;
 }
@@ -24,8 +25,8 @@ SimpleFood.prototype.calcCalories = function() {
 }
 
 // CompositeFood
-function CompositeFood(parts) {
-    Food.call(this);
+function CompositeFood(name, parts) {
+    Food.call(this, name);
     this.parts = parts;
 }
 CompositeFood.prototype = Object.create(Food.prototype);
@@ -38,15 +39,15 @@ CompositeFood.prototype.calcCalories = function() {
 }
 
 // Stuffing
-function Stuffing(price, calories) {
-    SimpleFood.call(this, price, calories);
+function Stuffing(name, price, calories) {
+    SimpleFood.call(this, name, price, calories);
 }
 Stuffing.prototype = Object.create(SimpleFood.prototype);
 Stuffing.prototype.constructor = Stuffing;
 
 // Topping
-function Topping(price, calories) {
-    SimpleFood.call(this, price, calories);
+function Topping(name, price, calories) {
+    SimpleFood.call(this, name, price, calories);
 }
 Topping.prototype = Object.create(SimpleFood.prototype);
 Topping.prototype.constructor = Topping;
@@ -63,11 +64,11 @@ HamburgerSize.prototype.getName = function() {
 }    
 
 // Hamburger
-function Hamburger(size, price, calories) {
-    var base = new SimpleFood(price, calories);
+function Hamburger(name, size, price, calories) {
+    var base = new SimpleFood("Основа", price, calories);
     CompositeFood.call(this, [base]);
     this.isStuffed = false;
-    if(HamburgerSize.SIZES.includes(size)) {
+    if(HamburgerSize.SIZES.some(function(s) { return s.getName() === size.getName();})) {
         this.size = size;
     }
     else {
@@ -132,22 +133,58 @@ Hamburger.prototype.checkOut = function() {
         + " калорий";
 } 
 
+function loadMenu(onLoaded) {
+    var menu = {};
+    var types = ['hamburger', 'stuffing', 'topping'];
+    var loadedTypes = [];
+    types.map(function(type){
+        var categoryName = type + 's';
+        menu[categoryName] = [];
+        Http.get('http://localhost:3000/products/?type='+type, function(data) {
+            data.map(function(productData) {
+                var product = createProduct(productData);
+                menu[categoryName].push(product);
+            });
+            loadedTypes.push(type);
+            if(loadedTypes.length === types.length) {
+                onLoaded(menu);
+            }
+        });
+    });    
+}
+
+loadMenu(function(menu) {
+    console.log(menu);
+})
+
+function createProduct(data) {
+    switch(data.type) {
+        case 'hamburger':
+            var size = new HamburgerSize(data.properties.size);
+            return new Hamburger(data.name, size, data.price, data.calories);
+        case 'stuffing':
+            return new Stuffing(data.name, data.price, data.calories);             
+        case 'topping':
+            return new Topping(data.name, data.price, data.calories);
+    }
+}
+
 function BurgerCafe(address) {
     this.address = address;
     this.yourHamburger = null
 }
 BurgerCafe.prototype.menu = {
-    SMALL_HAMBURGER: new Hamburger(HamburgerSize.SMALL_SIZE, 50, 20),
-    BIG_HAMBURGER: new Hamburger(HamburgerSize.BIG_SIZE, 100, 40),
+    SMALL_HAMBURGER: new Hamburger('Маленький гамбургер', HamburgerSize.SMALL_SIZE, 50, 20),
+    BIG_HAMBURGER: new Hamburger('Большой гамбургер', HamburgerSize.BIG_SIZE, 100, 40),
         
-    CHEESE_STUFFING: new Stuffing(10, 20),
-    SALAD_STUFFING: new Stuffing(20, 5),
-    POTATO_STUFFING: new Stuffing(15, 10),
-    TRUFFLE_STUFFING: new Stuffing(200, 20),
-    LOBSTER_STUFFING: new Stuffing(150, 15),
+    CHEESE_STUFFING: new Stuffing('Сыр', 10, 20),
+    SALAD_STUFFING: new Stuffing('Салат', 20, 5),
+    POTATO_STUFFING: new Stuffing('Картошка', 15, 10),
+    TRUFFLE_STUFFING: new Stuffing('Трюфели', 200, 20),
+    LOBSTER_STUFFING: new Stuffing('Лобстер', 150, 15),
    
-    SPICIES_TOPPING: new Topping(15, 0),
-    MAYONNAISE_TOPPING: new Topping(20, 5)
+    SPICIES_TOPPING: new Topping('Специи', 15, 0),
+    MAYONNAISE_TOPPING: new Topping('Майонез', 20, 5)
 }
 BurgerCafe.prototype.spellAction = function(message) {
     var dialog = document.getElementById('dialog');

@@ -79,6 +79,7 @@ Gallery.prototype.render = function() {
         self.galleryData.forEach(function(element) {
             var preview = new Image(element.thumb);
             preview.addClass('preview');
+            preview.setAttribute('data-product-id', element.productId);
             var link = new ActionLink(preview, function() {
                 var fullImg = new Image(element.full);                
                 Popup.show(fullImg);
