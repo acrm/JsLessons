@@ -133,42 +133,6 @@ Hamburger.prototype.checkOut = function() {
         + " калорий";
 } 
 
-function loadMenu(onLoaded) {
-    var menu = {};
-    var types = ['hamburger', 'stuffing', 'topping'];
-    var loadedTypes = [];
-    types.map(function(type){
-        var categoryName = type + 's';
-        menu[categoryName] = [];
-        Http.get('http://localhost:3000/products/?type='+type, function(data) {
-            data.map(function(productData) {
-                var product = createProduct(productData);
-                menu[categoryName].push(product);
-            });
-            loadedTypes.push(type);
-            if(loadedTypes.length === types.length) {
-                onLoaded(menu);
-            }
-        });
-    });    
-}
-
-loadMenu(function(menu) {
-    console.log(menu);
-})
-
-function createProduct(data) {
-    switch(data.type) {
-        case 'hamburger':
-            var size = new HamburgerSize(data.properties.size);
-            return new Hamburger(data.name, size, data.price, data.calories);
-        case 'stuffing':
-            return new Stuffing(data.name, data.price, data.calories);             
-        case 'topping':
-            return new Topping(data.name, data.price, data.calories);
-    }
-}
-
 function BurgerCafe(address) {
     this.address = address;
     this.yourHamburger = null

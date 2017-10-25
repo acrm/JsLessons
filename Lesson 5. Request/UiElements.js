@@ -15,6 +15,7 @@ UiException.prototype.constructor = UiException;
 function BaseUiElement() {
     this.id = null;
     this.classList = [];
+    this.data = {};
 }
 BaseUiElement.renderSomething = function(something) {
     if(typeof something === 'String') {
@@ -40,12 +41,18 @@ BaseUiElement.prototype.addClass = function(className) {
     this.classList.push(className);
     return this;
 }
+BaseUiElement.prototype.setData = function(key, value) {
+    this.data[key] = value;
+}
 BaseUiElement.prototype.applyBaseProperties = function(element) {
     if(this.id) {
         element.id = this.id;
     } 
     this.classList.forEach(function(className) {
         element.classList.add(className);
+    });
+    Object.keys(this.data).forEach((key )=> {
+        element.setAttribute('data-' + key, this.data[key]);
     });
 }
 /**
@@ -256,21 +263,6 @@ Popup.show = function (contentElement) {
     popupOverlay.appendChild(close.render());
     
     document.body.appendChild(popupOverlay);
-}
-
-function Http() {}
-Http.get = function(url, onDone) {
-    var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function(){
-        if(xhr.readyState === XMLHttpRequest.DONE) {
-            if (xhr.status === 200) {
-                var responseData = JSON.parse(xhr.responseText);
-                onDone(responseData);
-            }
-        }
-    };
-    xhr.open('GET', url, true);
-    xhr.send();
 }
 
 function ShoppingBasketItem(productId, count) {
