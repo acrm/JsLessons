@@ -66,7 +66,7 @@ HamburgerSize.prototype.getName = function() {
 // Hamburger
 function Hamburger(name, size, price, calories) {
     var base = new SimpleFood("Основа", price, calories);
-    CompositeFood.call(this, [base]);
+    CompositeFood.call(this, name, [base]);
     this.isStuffed = false;
     if(HamburgerSize.SIZES.some(function(s) { return s.getName() === size.getName();})) {
         this.size = size;

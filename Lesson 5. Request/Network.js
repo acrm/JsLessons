@@ -23,9 +23,12 @@ LoadingWrapper.prototype.replacePlaceholder = function(completeContentProvider) 
       this.wrapper.classList.remove('loading');
   }
   if(this.wrapper) {
-    this.wrapper.appendChild(completeContentProvider());
+      var parent = this.wrapper.parentNode;
+      parent.insertBefore(completeContentProvider(), this.wrapper);
+      parent.removeChild(this.wrapper);
   }
 }
+
 LoadingWrapper.prototype.render = function() {
   this.wrapper = document.createElement('div');
   if(!this.isComplete || !this.completeContentProvider) {

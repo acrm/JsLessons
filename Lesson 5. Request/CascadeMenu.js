@@ -77,146 +77,106 @@ CafeMenu.prototype.loadTypesData = function(onTypeLoaded) {
   });    
 }
 CafeMenu.prototype.createProduct = function(data) {
-switch(data.type) {
-    case 'hamburger':
-        var size = new HamburgerSize(data.properties.size);
-        return new Hamburger(data.name, size, data.price, data.calories);
-    case 'stuffing':
-        return new Stuffing(data.name, data.price, data.calories);             
-    case 'topping':
-        return new Topping(data.name, data.price, data.calories);
+  switch(data.type) {
+      case 'hamburger':
+          var size = new HamburgerSize(data.properties.size);
+          return new Hamburger(data.name, size, data.price, data.calories);
+      case 'stuffing':
+          return new Stuffing(data.name, data.price, data.calories);             
+      case 'topping':
+          return new Topping(data.name, data.price, data.calories);
+  }
 }
+CafeMenu.prototype.renderHamburgerMenu = function(items) {
+  var hamburgerItems = items.map((hamburger) => {
+    var item = new MenuItem(new ActionLink(
+      new TextBlock(
+        hamburger.getName() + ' ' + hamburger.calcPrice() + ' р. ' + hamburger.calcCalories() + ' кал.'), 
+        () => this.cafe.createHamburger(Object.create(hamburger))
+    ));
+    return item;
+  });
+  var nestedMenuItem = new NestedMenuItem(new TextBlock('Гамбургеры'), hamburgerItems);
+  return nestedMenuItem.render(); 
+}
+CafeMenu.prototype.renderStuffingMenu = function(items) {
+  var regularStuffingItems = [];
+  var premiumStuffingItems = [];
+  items.forEach((stuffing) => {
+    var item = new MenuItem(new ActionLink(
+      new TextBlock(
+        stuffing.name + ' ' + stuffing.price + ' р. ' + stuffing.calories + ' кал.'), 
+        () => this.cafe.chooseStuffing(stuffing)
+    ));
+    
+    if(stuffing.price > 100) {
+      premiumStuffingItems.push(item);
+    }
+    else {
+      regularStuffingItems.push(item);
+    }
+  });
+  
+  var stuffingItems;
+  if(regularStuffingItems.length > 0) {
+    stuffingItems = regularStuffingItems;
+    if(premiumStuffingItems.length > 0) {
+      var premiumStuffingMenu = new NestedMenuItem(
+        new TextBlock('Премиальные начинки'), 
+        [
+          new MenuItem(new ActionLink(
+            new TextBlock('У меня нет столько денег'),
+            () => { premiumStuffingMenu.remove(); })
+          ).addClass('frustration-item'), 
+        ].concat(premiumStuffingItems)
+      ).setId('premium-menu');
+      stuffingItems.push(premiumStuffingMenu);
+    }
+  }
+  else {
+    stuffingItems = premiumStuffingItems;
+  }
+  var nestedMenuItem = new NestedMenuItem(new TextBlock('Начинки'), stuffingItems);
+  return nestedMenuItem.render(); 
+}
+CafeMenu.prototype.renderToppingMenu = function(items) {
+  var toppingItems = items.map((topping) => {
+    var item = new MenuItem(new Container([
+      new TextBlock(topping.name + ' ' + topping.price + ' р. ' + topping.calories + ' кал.'),
+      new ActionLink(new TextBlock('+'), () => this.cafe.addTopping(topping)).addClass('menu-item-button'),
+      new ActionLink(new TextBlock('-'), () => this.cafe.removeTopping(topping)).addClass('menu-item-button')
+    ]).addClass('menu-item-container'));
+    
+    return item;
+  });
+  var nestedMenuItem = new NestedMenuItem(new TextBlock('Топпинги'), toppingItems);
+  return nestedMenuItem.render(); 
 }
 CafeMenu.prototype.render = function() {
   this.loadTypesData((type, items) => {
     var loadingWrapper = this.loadingWrappers[type];
     loadingWrapper.onComplete(() => {
-      var stuffingItems = items.map((stuffing) => {
-        var item = new MenuItem(new ActionLink(
-          new TextBlock(
-            stuffing.name + ' ' + stuffing.price + 'р. ' + stuffing.calories + 'кал.'), 
-            () => cafe.chooseStuffing(stuffing)
-        ));
-        return item;
-      });
-      var nestedMenuItem = new NestedMenuItem(new TextBlock(type), stuffingItems);
-      return nestedMenuItem.render(); 
+      switch(type) {
+        case 'hamburger': return this.renderHamburgerMenu(items);
+        case 'stuffing': return this.renderStuffingMenu(items);         
+        case 'topping': return this.renderToppingMenu(items);
+      }
     });
     loadingWrapper.complete();
   });
 
   var menuItems = [];
-  menuItems.push(new MenuItem(new Link('/', new TextBlock('Главная'))));
+  menuItems.push(new MenuItem(new TextBlock('Меню:')));
   
   this.types.forEach((type) => {
     menuItems.push(this.loadingWrappers[type]);
   });
 
-  menuItems.push(new MenuItem(new ActionLink(new TextBlock('Купить'), function() { 
-    this.cafe.checkOut();
-  })));
-  menuItems.push(new MenuItem(new Link('/about', new TextBlock('О нас'))));
+  menuItems.push(new NestedMenuItem(new TextBlock('Купить'), [
+    new MenuItem(new ActionLink(new TextBlock('Съем сейчас'), () => { this.cafe.checkOut(); })),
+    new MenuItem(new ActionLink(new TextBlock('Положить в корзину'), () => { this.cafe.checkOut(); }))
+  ]));
     
   var menu = new CascadeMenu(menuItems);
   return menu.render();
-///////////////////////////////////////////////////////////////////////
-  // this.types.forEach((type) => {
-  //   menuItems.push(loadingWrappers[type]);
-  // });
-
-  // new NestedMenuItem(new TextBlock('Гамбургеры'), [
-  //   new MenuItem(new ActionLink(new TextBlock('Большой гамбургер'), function() { 
-  //       cafe.createHamburger(cafe.menu.BIG_HAMBURGER);
-  //   })),
-  //   new MenuItem(new ActionLink(new TextBlock('Маленький гамбургер'), function() { 
-  //       cafe.createHamburger(cafe.menu.SMALL_HAMBURGER);
-  //   })),
-  //   stuffingMenu,
-  //   toppingMenu
-  // ]);
-
-  // self.loadingWrapper.onComplete(function() {
-  //     var container = new Container();
-  //     self.galleryData.forEach(function(element) {
-  //         var preview = new Image(element.thumb);
-  //         preview.addClass('preview');
-  //         preview.setAttribute('data-product-id', element.productId);
-  //         var link = new ActionLink(preview, function() {
-  //             var fullImg = new Image(element.full);                
-  //             Popup.show(fullImg);
-  //         });
-  //         container.addChild(link.render());
-  //     });
-  //     return container.render(); 
-  // });  
-  
-  // return self.loadingWrapper.render();
-  // loadMenu(function(menu) {
-  //     var stuffingItems = [];
-  //     menu.stuffings.forEach(function(stuffing) {
-  //         var item = new MenuItem(new ActionLink(
-  //             new TextBlock(stuffing.name + ' ' + stuffing.price + 'р. ' + stuffing.calories + 'кал.'), 
-  //             function() { 
-  //                 cafe.chooseStuffing(stuffing);
-  //             }));
-  //         stuffingItems.push(item);
-  //     });
-  // });
-  
-  // // Menu
-  // var stuffingMenu = new NestedMenuItem(new TextBlock('Начинки'), [
-  //     new MenuItem(new ActionLink(new TextBlock('Сыр'), function() { 
-  //         cafe.chooseStuffing(cafe.menu.CHEESE_STUFFING);
-  //     })),
-  //     new MenuItem(new ActionLink(new TextBlock('Салат'), function() { 
-  //         cafe.chooseStuffing(cafe.menu.SALAD_STUFFING);
-  //     })),
-  //     new MenuItem(new ActionLink(new TextBlock('Картошка'), function() { 
-  //         cafe.chooseStuffing(cafe.menu.SALAD_STUFFING);
-  //     })),
-  //     premiumStuffingMenu = new NestedMenuItem(new TextBlock('Премиальные начинки'), [
-  //         new MenuItem(new ActionLink(new TextBlock('Эти цены меня расстраивают'), function() { 
-  //             premiumStuffingMenu.remove();
-  //         })).addClass('frustration-item'),    
-  //         new MenuItem(new ActionLink(new TextBlock('Трюфеля'), function() { 
-  //             cafe.chooseStuffing(cafe.menu.TRUFFLE_STUFFING);
-  //         })),
-  //         new MenuItem(new ActionLink(new TextBlock('Омары'), function() { 
-  //             cafe.chooseStuffing(cafe.menu.LOBSTER_STUFFING);
-  //         }))
-  //     ]).setId('premium-menu')
-  // ]);
-  
-  // var toppingMenu = new NestedMenuItem(new TextBlock('Топпинги'), [
-  //     new MenuItem(new ActionLink(new TextBlock('Добавить специи'), function() { 
-  //         cafe.addTopping(cafe.menu.SPICIES_TOPPING);
-  //     })),
-  //     new MenuItem(new ActionLink(new TextBlock('Убрать специи'), function() { 
-  //         cafe.removeTopping(cafe.menu.SPICIES_TOPPING);
-  //     })),
-  //     new MenuItem(new ActionLink(new TextBlock('Добавить майонез'), function() { 
-  //         cafe.addTopping(cafe.menu.MAYONNAISE_TOPPING);
-  //     })),
-  //     new MenuItem(new ActionLink(new TextBlock('Убрать майонез'), function() { 
-  //         cafe.removeTopping(cafe.menu.MAYONNAISE_TOPPING);
-  //     }))
-  // ]);
-  
-  // var menu = new CascadeMenu([
-  //     new MenuItem(new Link('/', new TextBlock('Главная'))),
-  //     new NestedMenuItem(new TextBlock('Гамбургеры'), [
-  //         new MenuItem(new ActionLink(new TextBlock('Большой гамбургер'), function() { 
-  //             cafe.createHamburger(cafe.menu.BIG_HAMBURGER);
-  //         })),
-  //         new MenuItem(new ActionLink(new TextBlock('Маленький гамбургер'), function() { 
-  //             cafe.createHamburger(cafe.menu.SMALL_HAMBURGER);
-  //         })),
-  //         stuffingMenu,
-  //         toppingMenu
-  //     ]),
-  //     new MenuItem(new ActionLink(new TextBlock('Купить'), function() { 
-  //         cafe.checkOut();
-  //     })),
-  //     new MenuItem(new Link('/about', new TextBlock('О нас')))
-  // ]);
 }
