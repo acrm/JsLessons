@@ -1,0 +1,273 @@
+.header  {
+    height: 50px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: stretch;
+}
+
+.header > ul.menu {
+    background-color: #f90;
+    position: relative;
+    height: 50px;
+    width: 100%;
+}
+
+ul.menu {
+    display: flex;
+    justify-content: flex-start;
+    align-items: stretch;
+    list-style: none;
+    border: 1px solid #000;
+    border-radius: 5px;
+    background-color: #6c6;
+    margin: 5px;
+}
+
+.menu li {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    margin: 0px;
+    font-size: 20px;
+    font-family: sans-serif;
+    list-style-type: none;
+}
+
+ul.menu li:hover {
+    background-color: #c36;
+}
+
+ul.menu li:hover > p > ul.menu > li:hover {
+    border-radius: 5px;
+}
+
+ul.menu li a {
+    color: #eee;
+    text-decoration: none;
+}
+
+ul.menu li span {
+    color: #eee;
+}
+
+ul.menu li ul.menu {
+    display: none;   
+    position: absolute; 
+}    
+
+ul.menu li:hover > p > ul.menu {
+    display: flex;
+    flex-direction: column;
+}
+
+.menu-item-container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: stretch;
+}
+
+.menu-item-button {
+    padding: 5px 10px;
+    font-size: 28px;    
+}
+.menu-item-button:hover {
+    background-color: rgba(255, 255, 255, 0.6);
+}
+
+#premium-menu {
+    color: gold;
+    background-color: #101;
+}
+
+#premium-menu ul {
+    color: gold;
+    background-color: #101;
+    border: 2px solid gold;
+}
+
+#premium-menu li:hover {
+    background-color: darkslategray;
+}
+
+#premium-menu span {
+    color: gold;
+}
+
+.frustration-item {
+    color: white;
+    background-color: #f33;
+}
+
+#premium-remover {
+    display: flex;
+    align-items: center;
+}
+
+#premium-remover input[type=checkbox] {
+    width: 30px;
+    height: 30px;
+}
+
+#premium-remover span {
+    padding: 10px;
+    font-family: sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+    color: #966;
+}
+
+.loading {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 36px;
+}
+
+.preview {
+    cursor: pointer;
+    border: 1px solid #036;
+    border-radius: 5px;
+    margin: 20px; 
+    box-shadow: 
+        0 4px 8px 0 rgba(0, 0, 0, 0.2),
+        0 6px 20px 0 rgba(0, 0, 0, 0.2);
+}
+
+.preview:hover {    
+    border: 1px solid #f90;    
+}
+
+.popup-overlay {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.popup-close {
+    position: fixed;
+    top: 0px;
+    right: 10px;
+    font-size: 36px;
+    font-family: sans-serif;
+    font-weight: bold;
+    text-decoration: none;
+    color: #fff;
+    margin: 10px;
+}
+
+
+.popup-close:hover {
+    color: #cff;    
+    text-shadow: 
+        0px 0px 2px white;
+}
+
+.popup {
+    max-width: 80%;
+    max-height: 80%;
+    background-color: #fff;
+    overflow: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 10px solid #fff;
+    border-radius: 10px;
+    box-shadow: 
+        0 4px 8px 0 rgba(0, 0, 0, 0.2),
+        0 6px 20px 0 rgba(0, 0, 0, 0.2);
+}
+
+.validation-wrapper {
+    padding: 0px;
+}
+.validation-wrapper > input {
+    margin: 0px;
+}
+
+.validation-wrapper.valid > input {
+    border: 2px solid green;
+}
+
+.validation-wrapper.valid:after  {
+    content: '✓';
+    color: green;
+    margin: 0px 10px 0px 10px;
+}
+
+.validation-wrapper.invalid > input {
+    border: 2px solid red;
+}
+
+.validation-wrapper.invalid:after  {
+    content: attr(data-validation-message);
+    color: red;
+    margin: 0px 10px 0px 10px;
+}
+
+form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+}
+
+.form-row {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.form-row .label-cell {
+    width: 200px;
+    padding: 5px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.form-row .input-cell {
+    width: 100%;
+    padding: 5px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.basket-preview {
+    width: 120px;
+    height: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    list-style: none;
+    border: 1px solid #000;
+    border-radius: 5px;
+    background-color: #939;
+    margin: 5px;
+    padding: 0px 20px 0px 10px;
+    color:  rgb(154, 220, 90);
+    font-family: sans-serif;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.basket-preview:hover {
+    background-color: #c6c;
+}
+
+.basket-preview .price:after {
+    content: 'р.';
+    margin: 0px 5px 0px 2px ;
+}
+
