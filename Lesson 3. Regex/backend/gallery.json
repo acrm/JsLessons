@@ -1,4 +1,5 @@
-[
+{
+    "gallery": [
     {
         "thumb": "assets/small_hamb_thumb.png",
         "full": "assets/small_hamb_full.png"
@@ -12,3 +13,4 @@
         "full": "assets/special_hamb_full.png"
     }
 ]
+}
