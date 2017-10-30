@@ -27,32 +27,55 @@ function TextField(name, placeholder, linesNumber, validationRule) {
     this.placeholder = placeholder;
     this.validationRule = validationRule;
     this.linesNumber = !linesNumber ? 1 : linesNumber; 
+    this.inputElement = null;
+    this.textBuffer = null;
 }
 TextField.prototype = Object.create(BaseUiElement.prototype);
 TextField.prototype.constructor = TextField;
+TextField.prototype.setText = function(text) {
+    if(this.inputElement) {
+        this.inputElement.value = text;
+    }
+    else {
+        this.textBuffer = text;
+    }
+
+    return this;
+}
+TextField.prototype.getText = function() {
+    if(this.inputElement) {
+        return this.inputElement.value;
+    }
+    else {
+        return this.textBuffer;
+    }
+}
 TextField.prototype.render = function() {
     var validationWrapper = document.createElement('span');
     validationWrapper.classList.add('validation-wrapper');     
     this.applyBaseProperties(validationWrapper);        
     
     if(this.linesNumber > 1) {
-        var input = document.createElement('textarea');
-        input.rows = this.linesNumber;    
+        this.inputElement = document.createElement('textarea');
+        this.inputElement.rows = this.linesNumber; 
     }
     else {
-        var input = document.createElement('input');
-        input.type = 'text';    
+        this.inputElement = document.createElement('input');
+        this.inputElement.type = 'text';    
     }
-    input.name = this.name;
-    input.placeholder = this.placeholder;
-    validationWrapper.appendChild(input);
+    if(this.textBuffer) {
+        this.inputElement.value = this.textBuffer;
+    }   
+    this.inputElement.name = this.name;
+    this.inputElement.placeholder = this.placeholder;
+    validationWrapper.appendChild(this.inputElement);
 
     var pattern;
     if(this.validationRule) {
         validationWrapper.setAttribute('data-validation-message', this.validationRule.hint)    
         pattern = this.validationRule.pattern;
     }
-    input.addEventListener('input', function(event) {
+    this.inputElement.addEventListener('input', function(event) {
         if(!pattern) return;
         
         if(this.value.length > 0) {

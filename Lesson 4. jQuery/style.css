@@ -223,22 +223,73 @@ form {
     flex-direction: column;
 }
 
-ul.tabs {
+.tabs {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+}
+
+.tabsControl > ul {
     display: flex;
     justify-content: flex-start;
     align-items: stretch;
     list-style: none;
-    border: 1px solid #000;
-    border-radius: 5px;
+    --border: 1px solid #000;
+    margin: 0px;
+}
+
+.tabsControl > ul > li {
+    list-style-type: none;
+}
+
+.tab-headers {
     background-color: #6c6;
 }
 
-.tabs li {
-    display: flex;
-    align-items: center;
-    padding: 20px;
-    margin: 0px;
-    font-size: 20px;
-    font-family: sans-serif;
-    list-style-type: none;
+.tab-headers li {
+    background-color: #c6c;
+    border: 1px solid #000;
+    border-right: 0px;
 }
+
+.tab-headers li.active {
+    background-color: #fff;
+    border-bottom: 0px;
+}
+
+.tab-contents {
+    background-color: #cc6;
+}
+
+.tab-contents li {
+    display: none;
+}
+
+.tab-contents li.active {
+    display: block;
+    background-color: #fff;
+    border: 0px 1px 1px 1px solid #000;
+}
+
+.input-cell div {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.format-btn {
+    margin: 10px 0px;
+    padding: 5px;
+    text-decoration: none;
+    background: #ccc;
+    color: #333;
+    border: 1px #999 solid;
+    border-radius: 3px;
+}
+
+.format-btn:hover {
+    background: #cee;
+}
+
