@@ -35,5 +35,7 @@
 
       $(headers).children('li:first-child').addClass('active');
       $(contents).children('li:first-child').addClass('active');
+
+      $(headers).append($('<li/>').addClass('filler'));
     });
 }(jQuery));
