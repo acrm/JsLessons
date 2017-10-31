@@ -1,0 +1,38 @@
+{
+  "name": "burger-cafe",
+  "version": "1.0.0",
+  "description": "Burger Cafe site",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/acrm/JsLessons.git"
+  },
+  "keywords": [
+    "js",
+    "css",
+    "burger",
+    "cafe"
+  ],
+  "author": "Roman Slobodenyuk",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/acrm/JsLessons/issues"
+  },
+  "homepage": "https://github.com/acrm/JsLessons#readme",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-clean-css": "^3.9.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-eslint": "^4.0.0",
+    "gulp-jshint": "^2.0.4",
+    "gulp-rename": "^1.2.2",
+    "gulp-sass": "^3.1.0",
+    "gulp-uglify-es": "^0.1.3",
+    "jshint": "^2.9.5",
+    "pump": "^1.0.2",
+    "uglify-es": "^3.1.6"
+  }
+}
